@@ -1,7 +1,6 @@
 # PROVENANCE
 
 - Source repo: https://github.com/LavX/LMSUI
-- Registry directory: arc-library
 - Source commit: 884de9e585151bd746c6002caae31fff3d3ea774
 - Copy date: 2026-10-15
 

@@ -7,15 +7,15 @@ use std::{
 
 use async_compression::tokio::bufread::{GzipDecoder, ZstdDecoder};
 use axum::{
-    body::{to_bytes, Body, Bytes},
+    Json, Router,
+    body::{Body, Bytes, to_bytes},
     extract::{DefaultBodyLimit, FromRequest, Multipart, Request, State},
-    http::{header, HeaderMap, StatusCode},
+    http::{HeaderMap, StatusCode, header},
     response::{IntoResponse, Response},
     routing::{get, post},
-    Json, Router,
 };
-use rand::{rngs::StdRng, SeedableRng};
-use serde_json::{json, Map, Value};
+use rand::{SeedableRng, rngs::StdRng};
+use serde_json::{Map, Value, json};
 use tokio::io::{AsyncBufRead, AsyncRead, AsyncReadExt, ReadBuf};
 use tower_http::cors::CorsLayer;
 
@@ -108,7 +108,7 @@ async fn process_request(state: ApiState, request: Request) -> Result<Value, Api
 
     let force_edge = request.model == "flip-edge";
     let mut answers = Map::new();
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
     for (id, question) in &request.questions {
         let answer = match seed {
             Some(seed) => {
@@ -282,7 +282,7 @@ async fn decode_body(bytes: Bytes, headers: &HeaderMap) -> Result<Vec<u8>, ApiEr
             let mut remaining = bytes.as_ref();
             let mut decoded = Vec::new();
             while !remaining.is_empty() {
-                // In 0.4.18 a zstd decoder can report success on premature EOF.
+                // A zstd decoder can report success on premature EOF.
                 // A complete single frame stops before polling EOF. Turn an EOF
                 // poll into an error, then continue explicitly with any next frame.
                 let mut decoder = ZstdDecoder::new(CompleteFrameInput { remaining });

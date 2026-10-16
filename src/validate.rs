@@ -1,5 +1,5 @@
 use axum::http::StatusCode;
-use serde_json::{value::RawValue, Map, Value};
+use serde_json::{Map, Value, value::RawValue};
 
 use crate::{
     error::ApiError,
@@ -469,14 +469,14 @@ fn validate_noul(criteria: Option<&Value>, question_path: &str) -> Result<(), Ap
         .ok_or_else(|| ApiError::invalid(&criteria_path, "must be an object"))?;
 
     for answer in ["true", "false"] {
-        if let Some(value) = criteria.get(answer) {
-            if !is_flexible_value(value, true) {
-                let value_path = format!("{criteria_path}.{answer}");
-                return Err(ApiError::invalid(
-                    &value_path,
-                    "must be a string, object, array, or null",
-                ));
-            }
+        if let Some(value) = criteria.get(answer)
+            && !is_flexible_value(value, true)
+        {
+            let value_path = format!("{criteria_path}.{answer}");
+            return Err(ApiError::invalid(
+                &value_path,
+                "must be a string, object, array, or null",
+            ));
         }
     }
 

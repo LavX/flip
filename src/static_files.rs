@@ -1,9 +1,9 @@
 use axum::{
+    Router,
     extract::Path,
-    http::{header, StatusCode},
+    http::{StatusCode, header},
     response::{IntoResponse, Response},
     routing::get,
-    Router,
 };
 use rust_embed::RustEmbed;
 
@@ -15,7 +15,7 @@ struct Frontend;
 pub(crate) fn router() -> Router {
     Router::new()
         .route("/", get(index))
-        .route("/assets/*path", get(asset))
+        .route("/assets/{*path}", get(asset))
 }
 
 async fn index() -> Response {

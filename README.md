@@ -4,11 +4,15 @@ Flip is a parody decision model: every question is answered by a coin flip, behi
 
 ## Quickstart
 
-Prerequisites: Rust **1.82+** and Node **20.19+** or **22.12+**. Node **24** is used in development.
+Uses the latest stable releases verified on October 16, 2026: **Rust 1.99.1**, **Node.js 26.12.0 Current**, and **npm 12.2.0**. The project toolchain files and Docker image use these versions; lockfiles record the resolved dependencies.
 
 From the repo root:
 
 ```sh
+rustup toolchain install 1.99.1 --component rustfmt --component clippy
+nvm install
+nvm use
+npm install --global npm@12.2.0
 npm ci --prefix frontend
 npm run build --prefix frontend
 cargo run
@@ -173,12 +177,12 @@ For reproducible answers, start the backend with the test hook enabled:
 FLIP_ALLOW_TEST_SEED=true cargo run
 ```
 
-Then add `X-Flip-Seed: <u64>` to a request. The header makes answers reproducible when `FLIP_ALLOW_TEST_SEED=true`; the default is `false`.
+Then add `X-Flip-Seed: <u64>` to a request. The header makes answers reproducible when `FLIP_ALLOW_TEST_SEED=true`; the default is `false`. Seeded answers may change when the random-number generator dependency is upgraded.
 
 ## Credits / License
 
-Vendored LMSUI components come from the **arc-library** registry under the **MIT** license, at commit **`884de9e`**. Per-file SHA-256 provenance is recorded in [frontend/vendor/lmsui/PROVENANCE.md](frontend/vendor/lmsui/PROVENANCE.md).
+UI components retain their bundled [MIT license](frontend/vendor/lmsui/LICENSE). Fonts retain their bundled SIL Open Font License; museum coin images are public domain (CC0), with credits in the frontend.
 
-Flip is distributed under the [MIT license](LICENSE). Fonts retain their bundled SIL Open Font License; museum coin images are public domain (CC0), with credits in the frontend.
+Flip is distributed under the [MIT license](LICENSE).
 
 The coin is fair; we checked.

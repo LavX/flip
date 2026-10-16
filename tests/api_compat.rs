@@ -1,12 +1,12 @@
 use async_compression::tokio::write::{GzipEncoder, ZstdEncoder};
 use axum::{
-    body::{to_bytes, Body},
-    http::{header, HeaderName, HeaderValue, Method, Request, StatusCode},
-    response::Response,
     Router,
+    body::{Body, to_bytes},
+    http::{HeaderName, HeaderValue, Method, Request, StatusCode, header},
+    response::Response,
 };
 use flip::api::{router, router_with_test_seed};
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 use tokio::io::AsyncWriteExt;
 use tower::ServiceExt;
 
@@ -99,9 +99,11 @@ fn assert_uuid(value: &Value) {
         pieces.iter().map(|part| part.len()).collect::<Vec<_>>(),
         [8, 4, 4, 4, 12]
     );
-    assert!(pieces
-        .iter()
-        .all(|part| part.chars().all(|ch| ch.is_ascii_hexdigit())));
+    assert!(
+        pieces
+            .iter()
+            .all(|part| part.chars().all(|ch| ch.is_ascii_hexdigit()))
+    );
     assert_eq!(pieces[2].as_bytes()[0], b'4', "id is a UUID v4");
     assert!(matches!(pieces[3].as_bytes()[0], b'8' | b'9' | b'a' | b'b'));
 }
@@ -299,15 +301,21 @@ async fn cors_preflight_does_not_require_authentication() {
     )
     .await;
     assert!(response.status().is_success());
-    assert!(response
-        .headers()
-        .contains_key(header::ACCESS_CONTROL_ALLOW_ORIGIN));
-    assert!(response
-        .headers()
-        .contains_key(header::ACCESS_CONTROL_ALLOW_METHODS));
-    assert!(response
-        .headers()
-        .contains_key(header::ACCESS_CONTROL_ALLOW_HEADERS));
+    assert!(
+        response
+            .headers()
+            .contains_key(header::ACCESS_CONTROL_ALLOW_ORIGIN)
+    );
+    assert!(
+        response
+            .headers()
+            .contains_key(header::ACCESS_CONTROL_ALLOW_METHODS)
+    );
+    assert!(
+        response
+            .headers()
+            .contains_key(header::ACCESS_CONTROL_ALLOW_HEADERS)
+    );
 }
 
 #[tokio::test]

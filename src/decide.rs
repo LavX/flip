@@ -1,5 +1,5 @@
-use rand::Rng;
-use serde_json::{json, Map, Value};
+use rand::{Rng, RngExt};
+use serde_json::{Map, Value, json};
 
 use crate::models::Question;
 
@@ -9,13 +9,13 @@ use crate::models::Question;
 /// `force_edge` selects that path directly. The coin is fair, even when it is
 /// being deliberately unhelpful.
 pub fn answer(question: &Question, force_edge: bool, rng: &mut impl Rng) -> Value {
-    let edge = force_edge || rng.gen_range(0..6000) == 0;
+    let edge = force_edge || rng.random_range(0..6000) == 0;
 
     match question {
         Question::Noul => {
             let noul = if edge {
                 0.5
-            } else if rng.gen_bool(0.5) {
+            } else if rng.random_bool(0.5) {
                 1.0
             } else {
                 0.0
@@ -25,7 +25,7 @@ pub fn answer(question: &Question, force_edge: bool, rng: &mut impl Rng) -> Valu
         Question::Choice(criteria) => {
             let options: Vec<&String> = criteria.keys().collect();
             let option_count = options.len();
-            let winner = rng.gen_range(0..option_count);
+            let winner = rng.random_range(0..option_count);
             let probabilities = choice_probabilities(&options, edge, winner);
             let top_probability = if edge && option_count > 1 {
                 1.0 / option_count as f64
@@ -46,7 +46,7 @@ pub fn answer(question: &Question, force_edge: bool, rng: &mut impl Rng) -> Valu
             let selected_level = if edge {
                 None
             } else {
-                Some(rng.gen_range(0..level_count))
+                Some(rng.random_range(0..level_count))
             };
             let probabilities = indexed_probabilities(level_count, edge, selected_level);
             let legend: Map<String, Value> = criteria
@@ -92,10 +92,10 @@ pub fn answer(question: &Question, force_edge: bool, rng: &mut impl Rng) -> Valu
                     "confidence": 0.0
                 })
             } else {
-                let left = rng.gen_range(0..100_u32);
-                let right = rng.gen_range(left + 1..=100_u32);
-                let top = rng.gen_range(0..100_u32);
-                let bottom = rng.gen_range(top + 1..=100_u32);
+                let left = rng.random_range(0..100_u32);
+                let right = rng.random_range(left + 1..=100_u32);
+                let top = rng.random_range(0..100_u32);
+                let bottom = rng.random_range(top + 1..=100_u32);
 
                 json!({
                     "type": "box",
@@ -208,8 +208,8 @@ fn choice_probabilities(options: &[&String], edge: bool, selected: usize) -> Map
 mod tests {
     use std::collections::BTreeSet;
 
-    use rand::{rngs::StdRng, SeedableRng};
-    use serde_json::{json, Map, Value};
+    use rand::{SeedableRng, rngs::StdRng};
+    use serde_json::{Map, Value, json};
 
     use super::{answer, choice_confidence, score_confidence};
     use crate::models::Question;
@@ -280,10 +280,12 @@ mod tests {
         assert_eq!(key_set(normal_probabilities), expected);
         let winner = normal.get("choice").and_then(Value::as_str).unwrap();
         assert_eq!(number(&normal_probabilities[winner]), 1.0);
-        assert!(normal_probabilities
-            .iter()
-            .filter(|(key, _)| key.as_str() != winner)
-            .all(|(_, probability)| number(probability) == 0.0));
+        assert!(
+            normal_probabilities
+                .iter()
+                .filter(|(key, _)| key.as_str() != winner)
+                .all(|(_, probability)| number(probability) == 0.0)
+        );
         assert_eq!(normal_probabilities.values().map(number).sum::<f64>(), 1.0);
         assert_eq!(number(normal.get("confidence").unwrap()), 1.0);
 
@@ -292,9 +294,11 @@ mod tests {
         let edge_probabilities = probabilities(&edge);
         assert_eq!(key_set(edge_probabilities), expected);
         assert!(expected.contains(edge.get("choice").and_then(Value::as_str).unwrap()));
-        assert!(edge_probabilities
-            .values()
-            .all(|probability| number(probability) == 1.0 / 3.0));
+        assert!(
+            edge_probabilities
+                .values()
+                .all(|probability| number(probability) == 1.0 / 3.0)
+        );
         assert!((edge_probabilities.values().map(number).sum::<f64>() - 1.0).abs() < 1e-12);
         assert_eq!(number(edge.get("confidence").unwrap()), 0.0);
     }
@@ -360,9 +364,11 @@ mod tests {
         let edge = answer(&question, true, &mut edge_rng);
         let edge_probabilities = probabilities(&edge);
         assert_eq!(edge.get("legend"), Some(&json!(expected_legend)));
-        assert!(edge_probabilities
-            .values()
-            .all(|probability| number(probability) == 0.25));
+        assert!(
+            edge_probabilities
+                .values()
+                .all(|probability| number(probability) == 0.25)
+        );
         assert_eq!(edge_probabilities.values().map(number).sum::<f64>(), 1.0);
         let recomputed_edge_score = edge_probabilities
             .iter()
