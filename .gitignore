@@ -1,0 +1,15 @@
+/target
+frontend/node_modules
+frontend/dist
+.cargo-home
+.playwright-mcp
+.taste-skill/
+*.log
+
+.env
+.env.*
+!.env.example
+.impeccable/
+HANDOFF.md
+DESIGN.md
+*.png

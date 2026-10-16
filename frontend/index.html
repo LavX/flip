@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en" data-theme="dark" data-accent="amber">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#10110f" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23c3a15d'/%3E%3Ctext x='32' y='46' text-anchor='middle' font-family='sans-serif' font-size='42' fill='%23654b21'%3EF%3C/text%3E%3C/svg%3E" />
+    <meta name="description" content="Every decision model is a coin flip. Flip admits it. A free parody decision API with four compatible primitives and an honest coin." />
+    <link rel="preload" href="/src/assets/fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin />
+    <title>Flip 1.0 · Every decision model is a coin flip.</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>
+      <main style="padding:32px;max-width:720px">
+        <h1>Flip 1.0. Decisions, by chance.</h1>
+        <p>Every decision model is a coin flip. Flip admits it. The live tester needs JavaScript. You can still make a real coin decision with this command:</p>
+        <pre style="overflow:auto"><code>curl -X POST http://localhost:8080/v1/systemone -H 'Authorization: Bearer banana' -H 'Content-Type: application/json' --data '{"model":"flip-latest","state":"Should I?","questions":{"answer":{"type":"noul","instructions":"Should I?","criteria":{"true":"Yes","false":"No"}}}}'</code></pre>
+        <p>Replace localhost:8080 with your Flip server’s origin. Zero parameters. Zero training data. $0.00 per Btok. Flip is a parody. Do not route production decisions through a coin.</p>
+      </main>
+    </noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

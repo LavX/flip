@@ -1,0 +1,19 @@
+[package]
+name = "flip"
+version = "1.0.0"
+edition = "2021"
+rust-version = "1.82"
+
+[dependencies]
+axum = { version = "=0.7.9", features = ["multipart"] }
+tokio = { version = "=1.41.1", features = ["macros", "rt-multi-thread", "net", "io-util"] }
+serde = { version = "=1.0.229", features = ["derive"] }
+serde_json = { version = "=1.0.140", features = ["preserve_order", "arbitrary_precision", "raw_value"] }
+rand = "=0.8.5"
+tower-http = { version = "=0.5.2", features = ["cors"] }
+async-compression = { version = "=0.4.18", features = ["gzip", "zstd", "tokio"] }
+rust-embed = { version = "=8.7.2" }
+
+[dev-dependencies]
+tower = { version = "=0.5.2", features = ["util"] }
+futures-util = { version = "=0.3.34", default-features = false, features = ["std"] }

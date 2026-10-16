@@ -1,0 +1,40 @@
+services:
+  flip:
+    image: ${FLIP_IMAGE:?Set FLIP_IMAGE to the built release image}
+    restart: unless-stopped
+    read_only: true
+    init: true
+    user: "65532:65532"
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 128
+    mem_limit: 256m
+    cpus: 1.0
+    environment:
+      FLIP_BIND: 0.0.0.0
+      FLIP_PORT: "8080"
+      FLIP_ALLOW_TEST_SEED: "false"
+    networks: [traefik]
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: traefik_net
+      traefik.http.routers.flip.rule: Host(`flip.lavx.hu`)
+      traefik.http.routers.flip.entrypoints: websecure
+      traefik.http.routers.flip.tls.certresolver: myresolver
+      traefik.http.routers.flip.service: flip
+      traefik.http.services.flip.loadbalancer.server.port: "8080"
+      traefik.http.routers.flip-http.rule: Host(`flip.lavx.hu`)
+      traefik.http.routers.flip-http.entrypoints: web
+      traefik.http.routers.flip-http.middlewares: flip-https
+      traefik.http.routers.flip-http.service: flip
+      traefik.http.middlewares.flip-https.redirectscheme.scheme: https
+      traefik.http.middlewares.flip-https.redirectscheme.permanent: "true"
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+networks:
+  traefik:
+    external: true
+    name: traefik_net
